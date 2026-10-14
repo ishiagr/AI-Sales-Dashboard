@@ -1,0 +1,23 @@
+Date;Region;Product;Sales Channel;Units Sold;Unit Price;Total Revenue;Total Cost;Profit
+15/1/2025;North;Electronics;Online;131;322.17;42204.27;29102.33;13101.94
+22/1/2025;South;Clothing;Offline;89;64.47;5737.83;4369.01;1368.82
+5/2/2025;East;Home Goods;Online;88;144.67;12730.96;9426.93;3304.03
+18/2/2025;West;Electronics;Offline;113;296.67;33523.71;26161.53;7362.18
+3/3/2025;North;Clothing;Online;172;46.69;8030.68;5769.02;2261.66
+20/3/2025;South;Home Goods;Offline;73;132.65;9683.45;6246.49;3436.96
+2/4/2025;East;Electronics;Online;143;330.15;47211.45;32877.61;14333.84
+15/4/2025;West;Clothing;Offline;104;65.43;6804.72;4367.07;2437.65
+1/5/2025;North;Home Goods;Online;86;157.69;13561.34;9272.52;4288.82
+18/5/2025;South;Electronics;Offline;105;307.41;32278.05;20980.18;11297.87
+4/6/2025;East;Clothing;Online;135;58.39;7882.65;5510.52;2372.13
+21/6/2025;West;Home Goods;Offline;69;141.28;9748.32;6825.94;2922.38
+5/7/2025;North;Electronics;Online;114;287.46;32770.44;21471.85;11298.59
+14/7/2025;South;Clothing;Offline;97;63.28;6138.16;4522.81;1615.35
+20/7/2025;East;Home Goods;Online;76;168.51;12806.76;7744.24;5062.52
+28/7/2025;West;Electronics;Offline;138;312.65;43145.7;27372.92;15772.78
+3/8/2025;North;Clothing;Online;108;51.74;5587.92;3363.15;2224.77
+10/8/2025;South;Home Goods;Offline;67;147.3;9869.1;6985.27;2883.83
+17/8/2025;East;Electronics;Online;121;301.52;36483.92;23435.71;13048.21
+23/8/2025;West;Clothing;Offline;94;66.42;6243.48;4090.99;2152.49
+29/8/2025;North;Home Goods;Online;84;160.88;13513.92;8712.92;4801.0
+4/9/2025;South;Electronics;Offline;109;295.75;32236.75;20938.64;11298.11

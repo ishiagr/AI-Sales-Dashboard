@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sales Performance Dashboard</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef1f6;--card:#fff;--ink:#14213a;--mute:#5a6883;--line:#dce2ec;--acc:#2f5bea;--h:#0f9d8a;--c:#d98e04;--good:#0f7a57;--bad:#c4352b;--grid:rgba(20,33,58,.08);--sh:rgba(20,33,58,.07);--chip:#e6ebf6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1522;--card:#17202f;--ink:#e8edf6;--mute:#93a0b8;--line:#2a364a;--acc:#6b8cff;--h:#2bc2aa;--c:#f0b43a;--good:#3ccf9b;--bad:#ff7a70;--grid:rgba(232,237,246,.09);--sh:rgba(0,0,0,.4);--chip:#243046}}
+:root[data-theme="dark"]{--bg:#0e1522;--card:#17202f;--ink:#e8edf6;--mute:#93a0b8;--line:#2a364a;--acc:#6b8cff;--h:#2bc2aa;--c:#f0b43a;--good:#3ccf9b;--bad:#ff7a70;--grid:rgba(232,237,246,.09);--sh:rgba(0,0,0,.4);--chip:#243046}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{width:100%;max-width:2000px;margin:0 auto;padding:18px clamp(12px,2vw,32px) 36px;display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 1px 3px var(--sh);min-width:0}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+h2{font-size:15px;margin:0 0 2px}
+.sub{color:var(--mute);font-size:12px;margin:2px 0 10px}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:10px}
+label{display:grid;gap:3px;font-size:12px;color:var(--mute)}
+select,input,button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:6px 9px}
+button{cursor:pointer}button:hover{border-color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.seg{display:flex}.seg button{border-radius:0;margin-left:-1px}.seg button:first-child{border-radius:7px 0 0 7px;margin:0}.seg button:last-child{border-radius:0 7px 7px 0}
+.seg button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{display:inline-flex;gap:4px;align-items:center;background:var(--chip);border-radius:99px;padding:3px 5px 3px 11px;font-size:12px}
+.chip button{border:0;background:none;padding:0 5px;line-height:1;color:var(--mute)}
+.kpis{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(170px,1fr);gap:12px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 6px}
+.kpi{border-top:4px solid var(--k,var(--acc));padding:12px 14px;scroll-snap-align:start}
+.kpi:nth-child(1){--k:var(--acc)}.kpi:nth-child(2){--k:var(--h)}.kpi:nth-child(3){--k:var(--c)}.kpi:nth-child(4){--k:#8b5cf6}.kpi:nth-child(5){--k:#e0457b}.kpi:nth-child(6){--k:#0ea5e9}.kpi:nth-child(7){--k:var(--good)}.kpi:nth-child(8){--k:#f97316}
+.kpi .l{color:var(--mute);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.kpi .v{font-size:clamp(26px,2.6vw,38px);font-weight:700;letter-spacing:-.02em;margin:6px 0 4px;white-space:nowrap}
+.d{font-size:11px;display:block}.up{color:var(--good)}.dn{color:var(--bad)}.nu{color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.s2{grid-column:span 2}.s3{grid-column:1/-1}.nt{margin:0;padding-left:18px}.nt li{margin:0 0 8px}
+.cv{position:relative;height:300px}
+.hm{display:grid;grid-template-columns:auto repeat(3,1fr);gap:4px}
+.hm .h{font-size:12px;color:var(--mute);align-self:end;padding:2px 4px}
+.hm .r{font-size:12px;color:var(--mute);align-self:center;padding-right:6px}
+.hm button{height:62px;border:2px solid transparent;border-radius:8px;font-weight:600;padding:2px;line-height:1.25;transition:opacity .25s,background .4s}
+.hm button small{display:block;font-weight:500;font-size:10px}
+.hm button.low{border-color:var(--bad);border-style:dashed}
+.hm button.sel{border-color:var(--ink);border-style:solid}
+.hm button.dim{opacity:.35}
+.chn{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.chn .cv{flex:1 1 190px;height:230px}.chn table{flex:1 1 230px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:600}
+.l{text-align:left}
+th.s{cursor:pointer;user-select:none}th.s:hover{color:var(--ink)}
+.scroll{overflow-x:auto}
+.tools{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:10px}
+.empty{text-align:center;padding:56px 16px}
+[hidden]{display:none!important}
+@media(max-width:1099px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:699px){.grid{grid-template-columns:minmax(0,1fr)}.s2{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="card">
+ <div class="top"><div><h1>Sales performance</h1><p class="sub" id="rng" style="margin-bottom:0"></p></div><button id="th">Dark mode</button></div>
+ <div class="bar">
+  <label>Region<select id="fr"></select></label>
+  <label>Product<select id="fp"></select></label>
+  <label>Channel<select id="fc"></select></label>
+  <label>From<select id="ff"></select></label>
+  <label>To<select id="ft"></select></label>
+  <label>Metric<span class="seg"><button data-m="rev">Revenue</button><button data-m="pr">Profit</button><button data-m="u">Units</button></span></label>
+  <button class="reset">Reset filters</button>
+  <label>Load another CSV<input type="file" id="up" accept=".csv,.txt"></label><span class="sub" id="ust" style="margin:0"></span>
+ </div>
+ <div class="chips" id="chips"></div>
+</header>
+<section class="kpis" id="kpis"></section>
+<div class="card empty" id="empty" hidden><h2>No data matches these filters</h2><p class="sub">Remove a filter chip or reset everything to see the full picture.</p><button class="reset">Reset filters</button></div>
+<main id="main" style="display:grid;gap:14px">
+ <div class="grid">
+  <section class="card s3"><h2>Monthly trend</h2><p class="sub">Bars: <span class="m"></span>. Line: margin %. Click a month to filter. Lighter bar = partial month.</p><div class="cv" style="height:340px"><canvas id="cT"></canvas></div></section>
+  <section class="card"><h2>Product performance</h2><p class="sub">Click a bar to filter. Tooltip shows share of total.</p><div class="cv"><canvas id="cP"></canvas></div></section>
+  <section class="card"><h2>Regional performance</h2><p class="sub"><span class="m"></span> with margin % at the bar end. Click a bar to filter.</p><div class="cv"><canvas id="cR"></canvas></div></section>
+  <section class="card"><h2>Channel split</h2><p class="sub">Donut shows <span class="m"></span>. Click a slice to filter.</p><div class="chn"><div class="cv"><canvas id="cD"></canvas></div><table id="ct"></table></div></section>
+  <section class="card s2"><h2>Region × product</h2><p class="sub"><span class="m"></span> by cell. Dashed red = lowest. Click a cell to filter.</p><div class="hm" id="hm"></div></section>
+  <section class="card"><h2>Reading notes</h2><ul class="nt"><li>Small sample: <b id="nN"></b> transactions, so single deals swing monthly results. Treat trends as directional.</li><li id="nP"></li><li>Not in the data yet: targets or quotas, customer or salesperson IDs, prior-year data. Adding them unlocks actual vs target, top performers and year-over-year views.</li></ul></section>
+ </div>
+ <section class="card"><div class="tools"><h2 style="margin:0">Sales records</h2><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="sub" id="note" style="margin:0"></span><input id="q" type="search" placeholder="Search records" aria-label="Search records"><button id="ex">Export CSV</button></div></div><div class="scroll"><table><thead id="th2"></thead><tbody id="tb"></tbody></table></div></section>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const CSV=`Date;Region;Product;Sales Channel;Units Sold;Unit Price;Total Revenue;Total Cost;Profit
+15/1/2025;North;Electronics;Online;131;322.17;42204.27;29102.33;13101.94
+22/1/2025;South;Clothing;Offline;89;64.47;5737.83;4369.01;1368.82
+5/2/2025;East;Home Goods;Online;88;144.67;12730.96;9426.93;3304.03
+18/2/2025;West;Electronics;Offline;113;296.67;33523.71;26161.53;7362.18
+3/3/2025;North;Clothing;Online;172;46.69;8030.68;5769.02;2261.66
+20/3/2025;South;Home Goods;Offline;73;132.65;9683.45;6246.49;3436.96
+2/4/2025;East;Electronics;Online;143;330.15;47211.45;32877.61;14333.84
+15/4/2025;West;Clothing;Offline;104;65.43;6804.72;4367.07;2437.65
+1/5/2025;North;Home Goods;Online;86;157.69;13561.34;9272.52;4288.82
+18/5/2025;South;Electronics;Offline;105;307.41;32278.05;20980.18;11297.87
+4/6/2025;East;Clothing;Online;135;58.39;7882.65;5510.52;2372.13
+21/6/2025;West;Home Goods;Offline;69;141.28;9748.32;6825.94;2922.38
+5/7/2025;North;Electronics;Online;114;287.46;32770.44;21471.85;11298.59
+14/7/2025;South;Clothing;Offline;97;63.28;6138.16;4522.81;1615.35
+20/7/2025;East;Home Goods;Online;76;168.51;12806.76;7744.24;5062.52
+28/7/2025;West;Electronics;Offline;138;312.65;43145.7;27372.92;15772.78
+3/8/2025;North;Clothing;Online;108;51.74;5587.92;3363.15;2224.77
+10/8/2025;South;Home Goods;Offline;67;147.3;9869.1;6985.27;2883.83
+17/8/2025;East;Electronics;Online;121;301.52;36483.92;23435.71;13048.21
+23/8/2025;West;Clothing;Offline;94;66.42;6243.48;4090.99;2152.49
+29/8/2025;North;Home Goods;Online;84;160.88;13513.92;8712.92;4801.0
+4/9/2025;South;Electronics;Offline;109;295.75;32236.75;20938.64;11298.11`;
+function parseCSV(txt){
+ const L=txt.trim().split(/\r?\n/),del=L[0].includes(';')?';':',',h=L.shift().split(del).map(x=>x.trim().replace(/^\ufeff/,'')),ix=n=>h.indexOf(n);
+ return L.filter(l=>l.trim()).map(l=>{const c=l.split(del),raw=c[ix('Date')].trim(),t=raw.split('/');
+  const iso=raw.includes('/')?t[2]+'-'+t[1].padStart(2,'0')+'-'+t[0].padStart(2,'0'):raw,rev=+c[ix('Total Revenue')],pr=+c[ix('Profit')];
+  return{d:iso,m:iso.slice(0,7),reg:c[ix('Region')].trim(),prod:c[ix('Product')].trim(),ch:c[ix('Sales Channel')].trim(),u:+c[ix('Units Sold')],p:+c[ix('Unit Price')],rev,cost:+c[ix('Total Cost')],pr,mg:pr/rev*100}})}
+let D,REG,PROD,CH,MON,LAST,MAXD,MIND,PART;
+function setData(rows){D=rows;const u=k=>[...new Set(D.map(r=>r[k]))];REG=u('reg');PROD=u('prod');CH=u('ch');MON=u('m').sort();LAST=MON[MON.length-1];const ds=D.map(r=>r.d).sort();MIND=ds[0];MAXD=ds[ds.length-1];PART=+MAXD.slice(8)<25?LAST:''}
+setData(parseCSV(CSV));
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mlab=m=>MN[+m.slice(5)-1]+' '+m.slice(0,4),dlab=d=>(+d.slice(8))+' '+MN[+d.slice(5,7)-1]+' '+d.slice(0,4);
+const ML={rev:'Revenue',pr:'Profit',u:'Units'},KP=[['rev','Total revenue'],['pr','Total profit'],['mg','Profit margin'],['u','Units sold']];
+const $=id=>document.getElementById(id),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let S={reg:'',prod:'',ch:'',from:MON[0],to:LAST,metric:'rev'},SORT={k:'d',dir:1},Q='',C={},TR=[],DL=null;
+const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const rgba=(h,a)=>{const n=parseInt(h.slice(1),16);return`rgba(${n>>16},${n>>8&255},${n&255},${a})`};
+const rows=(ex=[])=>D.filter(r=>(ex.includes('reg')||!S.reg||r.reg===S.reg)&&(ex.includes('prod')||!S.prod||r.prod===S.prod)&&(ex.includes('ch')||!S.ch||r.ch===S.ch)&&(ex.includes('m')||(r.m>=S.from&&r.m<=S.to)));
+const sum=(a,k)=>a.reduce((s,r)=>s+r[k],0),mg=a=>{const v=sum(a,'rev');return v?sum(a,'pr')/v*100:null};
+const fm=(v,k=S.metric)=>(k==='u'?'':'$')+Math.round(v).toLocaleString('en-US'),fp=v=>v==null?'—':v.toFixed(1)+'%';
+const tk=v=>S.metric==='u'?v:'$'+(Math.abs(v)>=1000?+(v/1000).toFixed(1)+'K':v);
+const ck=(arr,key)=>(e,els)=>{if(els.length){const v=arr[els[0].index];S[key]=S[key]===v?'':v;sync()}};
+Chart.defaults.font.family='system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+function put(id,type,data,opt,plugins){opt={responsive:true,maintainAspectRatio:false,animation:{duration:RM?0:450},...opt};
+ if(C[id]){C[id].data=data;C[id].options=opt;C[id].update()}else C[id]=new Chart($(id),{type,data,options:opt,plugins:plugins||[]});return C[id]}
+const mgPlugin={id:'mg',afterDatasetsDraw(ch){const t=ch.$lab;if(!t)return;const x=ch.ctx;x.save();x.fillStyle=cv('--ink');x.font='600 12px system-ui,sans-serif';x.textBaseline='middle';ch.getDatasetMeta(0).data.forEach((b,i)=>x.fillText(t[i],b.x+8,b.y));x.restore()}};
+
+function kpis(a){
+ const ms=[...new Set(a.map(r=>r.m))].sort(),cur=a.filter(r=>r.m===ms[ms.length-1]),prv=ms.length>1?a.filter(r=>r.m===ms[ms.length-2]):null;
+ const f=(x,k)=>k==='mg'?mg(x):k==='n'?x.length:k==='aov'?(x.length?sum(x,'rev')/x.length:0):sum(x,k);
+ const card=(l,v,d)=>`<div class="card kpi"><div class="l">${l}</div><div class="v">${v}</div>${d}</div>`;
+ $('kpis').innerHTML=KP.map(([k,l])=>{
+  if(k==='topreg'||k==='topprod'){
+   const key=k==='topreg'?'reg':'prod',g={};a.forEach(r=>g[r[key]]=(g[r[key]]||0)+r.rev);
+   const e=Object.entries(g).sort((x,y)=>y[1]-x[1])[0],t=sum(a,'rev');
+   return card(l,e?e[0]:'—',`<span class="d nu">${e?(e[1]/t*100).toFixed(1)+'% of revenue':'&nbsp;'}</span>`)}
+  const v=a.length?f(a,k):null;let d='<span class="d nu">No prior month in view</span>';
+  if(prv){const c=f(cur,k),p=f(prv,k),diff=k==='mg'?c-p:(p?(c-p)/p*100:0);
+   d=`<span class="d ${diff>=0?'up':'dn'}">${diff>=0?'▲':'▼'} ${Math.abs(diff).toFixed(1)}${k==='mg'?' pp':'%'} vs ${MN[+ms[ms.length-2].slice(5)-1]}${ms[ms.length-1]===PART?' · partial':''}</span>`}
+  return card(l,v==null?'—':k==='mg'?fp(v):k==='n'?v:fm(v,k==='u'?'u':'rev'),d)}).join('')}
+
+function trend(){
+ const a=rows(['m']),k=S.metric,ml=MON.map(m=>a.filter(r=>r.m===m)),col=cv('--acc'),inr=m=>m>=S.from&&m<=S.to;
+ put('cT','bar',{labels:MON.map(mlab),datasets:[
+  {type:'bar',label:ML[k],data:ml.map(x=>sum(x,k)),yAxisID:'y',order:2,borderRadius:4,backgroundColor:MON.map(m=>rgba(col,!inr(m)?.2:m===PART?.55:1))},
+  {type:'line',label:'Margin %',data:ml.map(x=>mg(x)),yAxisID:'y1',order:1,borderColor:cv('--c'),backgroundColor:cv('--c'),tension:.3,pointRadius:4,spanGaps:true}]},
+ {interaction:{mode:'index',intersect:false},
+  onClick:(e,els)=>{if(!els.length)return;const m=MON[els[0].index];if(S.from===m&&S.to===m){S.from=MON[0];S.to=LAST}else{S.from=S.to=m}sync()},
+  scales:{y:{beginAtZero:true,ticks:{callback:tk}},y1:{position:'right',beginAtZero:true,suggestedMax:45,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}},
+  plugins:{legend:{position:'top',align:'end'},tooltip:{callbacks:{label:c=>c.dataset.yAxisID==='y1'?'Margin: '+fp(c.parsed.y):ML[k]+': '+fm(c.parsed.y),footer:i=>MON[i[0].dataIndex]===PART?'Partial month · data to '+dlab(MAXD):''}}}})}
+
+function prod(){
+ const a=rows(['prod']),k=S.metric,defs=k==='u'?[['u','Units','--acc']]:[['rev','Revenue','--acc'],['pr','Profit','--h']];
+ put('cP','bar',{labels:PROD,datasets:defs.map(([x,l,c])=>({label:l,k:x,borderRadius:4,data:PROD.map(p=>sum(a.filter(r=>r.prod===p),x)),backgroundColor:PROD.map(p=>!S.prod||S.prod===p?cv(c):rgba(cv(c),.25))}))},
+ {interaction:{mode:'index',intersect:false},onClick:ck(PROD,'prod'),scales:{y:{beginAtZero:true,ticks:{callback:tk}}},
+  plugins:{legend:{display:defs.length>1,position:'top',align:'end'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fm(c.parsed.y,c.dataset.k),afterLabel:c=>{const t=c.dataset.data.reduce((s,x)=>s+x,0);return t?(c.parsed.y/t*100).toFixed(1)+'% of total '+c.dataset.label.toLowerCase():''}}}}})}
+
+function regn(){
+ const a=rows(['reg']),k=S.metric,vals=REG.map(g=>sum(a.filter(r=>r.reg===g),k)),mgs=REG.map(g=>mg(a.filter(r=>r.reg===g)));
+ const ch=put('cR','bar',{labels:REG,datasets:[{label:ML[k],data:vals,borderRadius:4,backgroundColor:REG.map(g=>!S.reg||S.reg===g?cv('--acc'):rgba(cv('--acc'),.25))}]},
+ {indexAxis:'y',interaction:{mode:'nearest',axis:'y',intersect:false},onClick:ck(REG,'reg'),scales:{x:{beginAtZero:true,grace:'55%',ticks:{callback:tk}}},
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>ML[k]+': '+fm(c.parsed.x),afterLabel:c=>'Margin: '+fp(mgs[c.dataIndex])}}}},[mgPlugin]);
+ ch.$lab=vals.map((v,i)=>fm(v)+' · '+fp(mgs[i]));ch.draw()}
+
+function donut(){
+ const a=rows(['ch']),k=S.metric,vals=CH.map(c=>sum(a.filter(r=>r.ch===c),k)),tot=vals.reduce((s,x)=>s+x,0),cols=[cv('--acc'),cv('--c'),cv('--h'),'#8b5cf6','#e0457b','#0ea5e9'];
+ put('cD','doughnut',{labels:CH,datasets:[{data:vals,borderWidth:2,borderColor:cv('--card'),backgroundColor:CH.map((c,i)=>!S.ch||S.ch===c?cols[i]:rgba(cols[i],.25))}]},
+ {cutout:'62%',onClick:ck(CH,'ch'),plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.label+': '+fm(c.parsed)+(tot?' ('+(c.parsed/tot*100).toFixed(1)+'%)':'')}}}})}
+
+function heat(){
+ const a=rows(['reg','prod']),k=S.metric,v={};REG.forEach(g=>PROD.forEach(p=>v[g+p]=sum(a.filter(r=>r.reg===g&&r.prod===p),k)));
+ const vs=Object.values(v).filter(x=>x>0),mx=Math.max(...vs,1),mn=vs.length>1?Math.min(...vs):-1,acc=cv('--acc');
+ let h='<span></span>'+PROD.map(p=>`<span class="h">${p}</span>`).join('');
+ REG.forEach(g=>{h+=`<span class="r">${g}</span>`;PROD.forEach(p=>{
+  const x=v[g+p],t=x>0?.1+.8*x/mx:0,sel=S.reg===g&&S.prod===p,on=(!S.reg||S.reg===g)&&(!S.prod||S.prod===p),low=x>0&&x===mn;
+  h+=`<button data-g="${g}" data-p="${p}" class="${low?'low ':''}${sel?'sel ':''}${(S.reg||S.prod)&&!on?'dim':''}" style="background:${x>0?rgba(acc,t):'transparent'};color:${t>.5?'#fff':'var(--ink)'}">${x>0?fm(x):'—'}${low?'<small>lowest</small>':''}</button>`})});
+ $('hm').style.gridTemplateColumns='auto repeat('+PROD.length+',1fr)';$('hm').innerHTML=h}
+
+function chan(){
+ const a=rows(['ch']);
+ $('ct').innerHTML='<tr><th class="l">Channel</th><th>Revenue</th><th>Margin</th><th>Avg order</th></tr>'+CH.map(c=>{const b=a.filter(r=>r.ch===c);
+  return`<tr><td class="l">${c}</td><td>${fm(sum(b,'rev'),'rev')}</td><td>${fp(mg(b))}</td><td>${b.length?fm(sum(b,'rev')/b.length,'rev'):'—'}</td></tr>`}).join('')}
+
+const COLS=[['d','Date',1],['reg','Region',1],['prod','Product',1],['ch','Channel',1],['u','Units'],['p','Unit price'],['rev','Revenue'],['cost','Cost'],['pr','Profit'],['mg','Margin']];
+const money=x=>'$'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function tbl(a){
+ const q=Q.toLowerCase();TR=a.filter(r=>!q||(Object.values(r).join(' ')+' '+dlab(r.d)).toLowerCase().includes(q));
+ TR.sort((x,y)=>(x[SORT.k]>y[SORT.k]?1:x[SORT.k]<y[SORT.k]?-1:0)*SORT.dir);
+ $('th2').innerHTML='<tr>'+COLS.map(c=>`<th class="s ${c[2]?'l':''}" data-k="${c[0]}" aria-sort="${SORT.k===c[0]?(SORT.dir>0?'ascending':'descending'):'none'}">${c[1]}${SORT.k===c[0]?(SORT.dir>0?' ▲':' ▼'):''}</th>`).join('')+'</tr>';
+ $('tb').innerHTML=TR.length?TR.map(r=>`<tr><td class="l">${dlab(r.d)}</td><td class="l">${r.reg}</td><td class="l">${r.prod}</td><td class="l">${r.ch}</td><td>${r.u}</td><td>${money(r.p)}</td><td>${money(r.rev)}</td><td>${money(r.cost)}</td><td>${money(r.pr)}</td><td>${fp(r.mg)}</td></tr>`).join(''):'<tr><td class="l" colspan="10">No records match your search.</td></tr>'}
+
+function chips(){
+ const c=[];if(S.reg)c.push(['reg',S.reg]);if(S.prod)c.push(['prod',S.prod]);if(S.ch)c.push(['ch',S.ch]);
+ if(S.from!==MON[0]||S.to!==LAST)c.push(['m',S.from===S.to?mlab(S.from):mlab(S.from)+' – '+mlab(S.to)]);
+ $('chips').innerHTML=c.map(([k,t])=>`<span class="chip">${t}<button data-k="${k}" aria-label="Remove filter ${t}">✕</button></span>`).join('')}
+
+function render(){
+ const a=rows(),n=a.length,ds=a.map(r=>r.d).sort();
+ $('rng').textContent=n?`${n} of ${D.length} sales · ${dlab(ds[0])} to ${dlab(ds[n-1])}`:`0 of ${D.length} sales · ${dlab(MIND)} to ${dlab(MAXD)} available`;
+ document.querySelectorAll('.m').forEach(e=>e.textContent=ML[S.metric].toLowerCase());
+ $('nN').textContent=D.length;$('nP').textContent=PART?mlab(LAST)+' is a partial month (data to '+dlab(MAXD)+').':'';
+ $('empty').hidden=n>0;$('main').hidden=!n;kpis(a);chips();
+ if(n){trend();prod();regn();donut();heat();chan();tbl(a)}}
+function sync(){
+ $('fr').value=S.reg;$('fp').value=S.prod;$('fc').value=S.ch;$('ff').value=S.from;$('ft').value=S.to;
+ document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===S.metric));render()}
+
+const opt=(a,all)=>(all?`<option value="">${all}</option>`:'')+a.map(x=>`<option value="${x}">${x}</option>`).join('');
+function buildSelects(){$('fr').innerHTML=opt(REG,'All regions');$('fp').innerHTML=opt(PROD,'All products');$('fc').innerHTML=opt(CH,'All channels');$('ff').innerHTML=$('ft').innerHTML=MON.map(m=>`<option value="${m}">${mlab(m)}</option>`).join('')}
+$('up').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+ try{const rows=parseCSV(await f.text());if(!rows.length||rows.some(r=>!r.d||isNaN(r.rev)||isNaN(r.pr)||isNaN(r.u)))throw 0;
+  setData(rows);S={...S,reg:'',prod:'',ch:'',from:MON[0],to:LAST};buildSelects();rebuild();$('ust').textContent='Loaded '+f.name+' ('+rows.length+' rows)'}
+ catch(x){$('ust').textContent='Could not read that file. Expected columns: Date (D/M/YYYY), Region, Product, Sales Channel, Units Sold, Unit Price, Total Revenue, Total Cost, Profit.'}};
+$('fr').onchange=e=>{S.reg=e.target.value;sync()};$('fp').onchange=e=>{S.prod=e.target.value;sync()};$('fc').onchange=e=>{S.ch=e.target.value;sync()};
+$('ff').onchange=e=>{S.from=e.target.value;if(S.from>S.to)S.to=S.from;sync()};
+$('ft').onchange=e=>{S.to=e.target.value;if(S.to<S.from)S.from=S.to;sync()};
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{S.metric=b.dataset.m;sync()});
+document.querySelectorAll('.reset').forEach(b=>b.onclick=()=>{S={...S,reg:'',prod:'',ch:'',from:MON[0],to:LAST};sync()});
+$('chips').onclick=e=>{const k=e.target.dataset.k;if(!k)return;if(k==='m'){S.from=MON[0];S.to=LAST}else S[k]='';sync()};
+$('hm').onclick=e=>{const b=e.target.closest('button');if(!b)return;const g=b.dataset.g,p=b.dataset.p;if(S.reg===g&&S.prod===p){S.reg='';S.prod=''}else{S.reg=g;S.prod=p}sync()};
+$('th2').onclick=e=>{const k=e.target.closest('th')?.dataset.k;if(!k)return;SORT=SORT.k===k?{k,dir:-SORT.dir}:{k,dir:1};tbl(rows())};
+$('q').oninput=e=>{Q=e.target.value;tbl(rows())};
+const DLP=(async()=>{try{return await window.claude.use('downloads')}catch(e){return null}})();
+$('ex').onclick=async()=>{
+ const h=['Date','Region','Product','Sales Channel','Units Sold','Unit Price','Total Revenue','Total Cost','Profit','Margin %'];
+ const csv=[h.join(',')].concat(TR.map(r=>[r.d,r.reg,r.prod,r.ch,r.u,r.p,r.rev,r.cost,r.pr,r.mg.toFixed(2)].join(','))).join('\n');
+ try{
+  const dl=await DLP;
+  if(dl){await dl.save({filename:'sales-filtered.csv',data:csv})}
+  else{const u=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),l=document.createElement('a');l.href=u;l.download='sales-filtered.csv';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+  $('note').textContent='Exported '+TR.length+' rows'}
+ catch(e){$('note').textContent=e&&e.code==='declined'?'':'Export unavailable'}};
+
+const eff=()=>document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+function rebuild(){Object.values(C).forEach(c=>c.destroy());C={};Chart.defaults.color=cv('--mute');Chart.defaults.borderColor=cv('--grid');$('th').textContent=eff()==='dark'?'Light mode':'Dark mode';sync()}
+$('th').onclick=()=>{document.documentElement.dataset.theme=eff()==='dark'?'light':'dark';rebuild()};
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(!document.documentElement.dataset.theme)rebuild()});
+buildSelects();rebuild();
+</script>
+</body>
+</html>

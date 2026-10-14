@@ -1,7 +1,7 @@
 # AI-Assisted Sales Performance Dashboard
 
 An interactive sales dashboard built with AI assistance from a raw CSV, with the data reconciled and validated before any visualization was built. The project also includes a root-cause analysis of a month where units sold rose while revenue fell.
-
+**[Live demo](https://ishiagr.github.io/AI-Sales-Dashboard/)** 
 Sample data only · Built by Ishita Agrawal ([LinkedIn](https://www.linkedin.com/in/ishita10/))
 
 
